@@ -5,6 +5,8 @@ export default {
    * default: left
    */
   activeManager: 'left',
+  mainDir:null,
+  dataS:[],
 
   /**
    * Clipboard

@@ -9,6 +9,14 @@ export default {
     return HTTP.get('initialize');
   },
 
+  index(){
+    return HTTP.get('index');
+  },
+
+  indexCu(idCu){
+    return HTTP.get('indexCu',{params: {idCu}});
+  },
+
   /**
    * Get directories for the tree (upper level)
    * @param disk
@@ -35,7 +43,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   content(disk, path) {
-    return HTTP.get('content', { params: { disk, path } });
+    return HTTP.get('content', { params: { disk, path} });
   },
 
   /**

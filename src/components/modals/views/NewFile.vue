@@ -32,6 +32,7 @@
 <script>
 import modal from './../mixins/modal';
 import translate from './../../../mixins/translate';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'NewFile',
@@ -53,6 +54,10 @@ export default {
     submitActive() {
       return this.fileName && !this.fileExist;
     },
+
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
+    }),
   },
   methods: {
     /**
@@ -75,6 +80,11 @@ export default {
         if (response.data.result.status === 'success') {
           // close modal window
           this.hideModal();
+           if(this.currentUser.can['index_disk_cu']){
+              this.$store.dispatch('fm/index'); 
+          }else{
+              this.$store.dispatch('fm/indexCu', this.currentUser.id_cu);
+          }
         }
       });
     },

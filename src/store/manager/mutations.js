@@ -1,3 +1,4 @@
+
 export default {
   /**
    * Set selected disk
@@ -23,8 +24,9 @@ export default {
    * @param state
    * @param directory
    */
-  setSelectedDirectory(state, directory) {
-    state.selectedDirectory = directory;
+  setSelectedDirectory(state, path) {
+    state.selectedDirectory = path;
+    state.selectedFiles = [];
   },
 
   /**
@@ -35,6 +37,20 @@ export default {
    */
   setSelected(state, { type, path }) {
     state.selected[type].push(path);
+  },
+
+  setSelectedFiles(state, id){
+    state.selectedFiles.push(id);
+  },
+
+  setSelectedFile(state, id){
+    state.selectedFiles = [];
+    state.selectedFiles.push(id);
+  },
+
+  removeSelectedFile(state, id){
+    let index= state.selectedFiles.findIndex(index => index.id == id.id);
+    state.selectedFiles.splice(index, 1);
   },
 
   /**
@@ -57,6 +73,7 @@ export default {
     state.selected.directories = [];
     state.selected.files = [];
     state.selected[type].push(path);
+    state.selectedFiles = [];
   },
 
   /**

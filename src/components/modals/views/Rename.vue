@@ -34,18 +34,24 @@
 <script>
 import modal from './../mixins/modal';
 import translate from './../../../mixins/translate';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Rename',
   mixins: [modal, translate],
   data() {
     return {
+      fullname:'',
       name: '',
+      ext:'',
       directoryExist: false,
       fileExist: false,
     };
   },
   computed: {
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
+    }),
     /**
      * Selected item
      * @returns {*}
@@ -67,12 +73,18 @@ export default {
      * @returns {*|boolean}
      */
     submitDisable() {
-      return this.checkName || this.name === this.selectedItem.basename;
+      return this.checkName || this.name+'.'+ this.ext === this.selectedItem.basename;
     },
   },
   mounted() {
     // initiate item name
-    this.name = this.selectedItem.basename;
+    console.log(this.selectedItem);
+    if(this.selectedItem.type=='file'){
+     this.name = this.selectedItem.filename;
+     this.ext = this.selectedItem.extension; 
+    }else{
+     this.name = this.selectedItem.basename;
+    }
   },
   methods: {
     /**
@@ -95,10 +107,15 @@ export default {
      * Rename item
      */
     rename() {
+      if(this.selectedItem.type=='file'){
+         this.fullname = this.name + '.' + this.ext;
+      }else{
+         this.fullname = this.name;
+      }
       // create new name with path
       const newName = this.selectedItem.dirname ?
-        `${this.selectedItem.dirname}/${this.name}` :
-        this.name;
+        `${this.selectedItem.dirname}/${this.fullname}` :
+        this.fullname;
 
       this.$store.dispatch('fm/rename', {
         type: this.selectedItem.type,
@@ -107,6 +124,11 @@ export default {
       }).then(() => {
         // close modal window
         this.hideModal();
+        if(this.currentUser.can['index_disk_cu']){
+              this.$store.dispatch('fm/index'); 
+          }else{
+              this.$store.dispatch('fm/indexCu', this.currentUser.id_cu);
+          }
       });
     },
   },

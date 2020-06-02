@@ -97,6 +97,7 @@
 import modal from './../mixins/modal';
 import translate from './../../../mixins/translate';
 import helper from './../../../mixins/helper';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Upload',
@@ -111,6 +112,9 @@ export default {
     };
   },
   computed: {
+     ...mapGetters('auth',{
+				currentUser: 'currentUser'
+    }),
 
     /**
      * Progress bar value - %
@@ -174,6 +178,11 @@ export default {
           if (response.data.result.status === 'success') {
             // close modal window
             this.hideModal();
+          if(this.currentUser.can['index_disk_cu']){
+              this.$store.dispatch('fm/index'); 
+          }else{
+              this.$store.dispatch('fm/indexCu', this.currentUser.id_cu);
+          }
           }
         });
       }

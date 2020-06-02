@@ -1,3 +1,6 @@
+import store from "laravel-file-manager/src/store/manager/store";
+
+
 export default {
   /**
    * Get a list of disks
@@ -7,6 +10,7 @@ export default {
   diskList(state) {
     return Object.keys(state.disks);
   },
+  
 
   /**
    * Selected disk for active manager
@@ -24,6 +28,10 @@ export default {
    */
   selectedDirectory(state) {
     return state[state.activeManager].selectedDirectory;
+  },
+
+  selectedFiles(state) {
+    return state[state.activeManager].selectedFiles;
   },
 
   /**

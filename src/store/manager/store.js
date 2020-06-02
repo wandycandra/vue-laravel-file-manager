@@ -11,6 +11,8 @@ export default {
 
       // selected directory
       selectedDirectory: null,
+      
+      selectedFiles:[],
 
       // Directories in the selected directory
       directories: [],
@@ -29,6 +31,7 @@ export default {
         field: 'name',
         direction: 'up',
       },
+
 
       // history
       history: [null],

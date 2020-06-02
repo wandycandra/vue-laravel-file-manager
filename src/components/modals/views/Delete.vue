@@ -25,6 +25,7 @@
 <script>
 import SelectedFileList from '../additions/SelectedFileList.vue';
 import modal from './../mixins/modal';
+import { mapGetters } from 'vuex';
 import translate from './../../../mixins/translate';
 
 export default {
@@ -32,6 +33,9 @@ export default {
   mixins: [modal, translate],
   components: { SelectedFileList },
   computed: {
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
+    }),
     /**
      * Files and folders for deleting
      * @returns {*}
@@ -54,6 +58,11 @@ export default {
       this.$store.dispatch('fm/delete', items).then(() => {
         // close modal window
         this.hideModal();
+         if(this.currentUser.can['index_disk_cu']){
+              this.$store.dispatch('fm/index'); 
+          }else{
+              this.$store.dispatch('fm/indexCu', this.currentUser.id_cu);
+          }
       });
     },
   },

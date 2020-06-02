@@ -99,6 +99,24 @@ export default {
    * @param disk
    * @param path
    */
+
+  index({state, commit}){
+    GET.index().then((response) => {
+      if (response.data.status === 'success') {
+        commit('index', response.data.model);
+        // console.log(response.data);
+      }
+    });
+  },
+
+  indexCu({state, commit},idCu){
+    GET.indexCu(idCu).then((response) => {
+      if (response.data.status === 'success') {
+        commit('indexCu', response.data.model);
+      }
+    });
+  },
+
   getLoadContent(context, { manager, disk, path }) {
     GET.content(disk, path).then((response) => {
       if (response.data.result.status === 'success') {
@@ -143,12 +161,11 @@ export default {
    * @param fileName
    * @returns {Promise}
    */
-  createFile({ getters, dispatch }, fileName) {
+  createFile({ getters, dispatch,state}, fileName) {
     // directory for new file
     const selectedDirectory = getters.selectedDirectory;
-
     // create new file, server side
-    return POST.createFile(getters.selectedDisk, selectedDirectory, fileName)
+    return POST.createFile(getters.selectedDisk, selectedDirectory, fileName, state.mainDir)
       .then((response) => {
       // update file list
         dispatch('updateContent', {
@@ -232,7 +249,7 @@ export default {
    * @param overwrite
    * @returns {Promise}
    */
-  upload({ getters, commit, dispatch }, { files, overwrite }) {
+  upload({ getters, commit, dispatch,state }, { files, overwrite }) {
     // directory where files will be uploaded
     const selectedDirectory = getters.selectedDirectory;
 
@@ -241,6 +258,7 @@ export default {
     data.append('disk', getters.selectedDisk);
     data.append('path', selectedDirectory || '');
     data.append('overwrite', overwrite);
+    data.append('mainDir', state.mainDir);
     // add file or files
     for (let i = 0; i < files.length; i += 1) {
       data.append('files[]', files[i]);
@@ -311,20 +329,25 @@ export default {
    * @param getters
    * @param dispatch
    */
-  paste({ state, commit, getters, dispatch }) {
+  paste({ state, commit, getters, dispatch },{idCu,canIndexDisk}) {
     POST.paste({
       disk: getters.selectedDisk,
       path: getters.selectedDirectory,
       clipboard: state.clipboard,
+      mainDir: state.mainDir
     }).then((response) => {
       // if the action was successful
       if (response.data.result.status === 'success') {
         // refresh content
         dispatch('refreshAll');
-
         // if action - cut - clear clipboard
         if (state.clipboard.type === 'cut') {
           commit('resetClipboard');
+        }
+        if(canIndexDisk==true){
+          dispatch('index'); 
+        }else{
+          dispatch('indexCu', idCu);
         }
       }
     });
@@ -383,6 +406,7 @@ export default {
       path: selectedDirectory,
       name,
       elements: state[state.activeManager].selected,
+      mainDir: state.mainDir
     }).then((response) => {
       // if zipped successfully
       if (response.data.result.status === 'success'
@@ -403,13 +427,14 @@ export default {
    * @param folder
    * @returns {*|PromiseLike<T | never>|Promise<T | never>}
    */
-  unzip({ getters, dispatch }, folder) {
+  unzip({ getters, dispatch,state }, folder) {
     const selectedDirectory = getters.selectedDirectory;
 
     return POST.unzip({
       disk: getters.selectedDisk,
       path: getters.selectedItems[0].path,
       folder,
+      mainDir: state.mainDir
     }).then((response) => {
       // if unzipped successfully
       if (response.data.result.status === 'success'

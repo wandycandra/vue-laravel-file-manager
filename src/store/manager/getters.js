@@ -13,6 +13,8 @@ export default {
     return state.files.filter(item => item.basename.match(new RegExp('^([^.]).*', 'i')));
   },
 
+
+
   /**
    * Directories list(filtered)
    * @param state

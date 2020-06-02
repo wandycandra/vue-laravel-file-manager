@@ -1,21 +1,37 @@
 {
-  "name": "laravel-file-manager",
-  "version": "2.4.14",
-  "description": "File manager for Laravel",
-  "keywords": [
-    "laravel",
-    "file",
-    "manager"
+  "_args": [
+    [
+      "laravel-file-manager@2.4.12",
+      "C:\\laragon\\bkcuvue"
+    ]
   ],
-  "author": "Aleksandr Manekin <alexusmai@gmail.com>",
-  "private": false,
-  "license": "MIT",
-  "main": "src/init.js",
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+  "_from": "laravel-file-manager@2.4.12",
+  "_id": "laravel-file-manager@2.4.12",
+  "_inBundle": false,
+  "_integrity": "sha512-e+kfVr+YNJ9xr5fCzQ4joOAEf4LiLYx4pS06GUSZt2uwoIvlHIQ8u4w1yw3rQ9We8CyB5fV6oi/K6S0HBGXekg==",
+  "_location": "/laravel-file-manager",
+  "_phantomChildren": {
+    "debug": "3.1.0"
+  },
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "laravel-file-manager@2.4.12",
+    "name": "laravel-file-manager",
+    "escapedName": "laravel-file-manager",
+    "rawSpec": "2.4.12",
+    "saveSpec": null,
+    "fetchSpec": "2.4.12"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/laravel-file-manager/-/laravel-file-manager-2.4.12.tgz",
+  "_spec": "2.4.12",
+  "_where": "C:\\laragon\\bkcuvue",
+  "author": {
+    "name": "Aleksandr Manekin",
+    "email": "alexusmai@gmail.com"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -26,6 +42,7 @@
     "vue-codemirror": "^4.0.5",
     "vuex": "^3.0.1"
   },
+  "description": "File manager for Laravel",
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.5",
     "@vue/cli-plugin-eslint": "^3.0.5",
@@ -39,5 +56,21 @@
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.5.17"
-  }
+  },
+  "keywords": [
+    "laravel",
+    "file",
+    "manager"
+  ],
+  "license": "MIT",
+  "main": "src/init.js",
+  "name": "laravel-file-manager",
+  "private": false,
+  "scripts": {
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "serve": "vue-cli-service serve",
+    "test:unit": "vue-cli-service test:unit"
+  },
+  "version": "2.4.12"
 }

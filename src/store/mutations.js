@@ -9,6 +9,14 @@ export default {
     state.disks = disks;
   },
 
+  index(state,dataS){
+    state.dataS = dataS;
+  },
+
+  indexCu(state,dataS){
+    state.dataS = dataS;
+  },
+
   /**
    * Set clipboard
    * @param state

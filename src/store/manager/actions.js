@@ -12,10 +12,9 @@ export default {
    * @param history
    * @returns {Promise}
    */
-  selectDirectory({ state, commit, dispatch, rootState }, { path, history }) {
+  selectDirectory({ state, commit, dispatch, rootState }, { path, history}) {
     // reset content
     commit('setDirectoryContent', { directories: [], files: [] });
-
     // get content for the selected directory
     return GET.content(state.selectedDisk, path).then((response) => {
       if (response.data.result.status === 'success') {
@@ -36,6 +35,18 @@ export default {
         }
       }
     });
+  },
+
+  setSelectedFiles({state,commit}, id){
+    commit('setSelectedFiles', id);
+  },
+
+  removeSelectedFile({state,commit}, id){
+    commit('removeSelectedFile', id);
+  },
+
+  setSelectedFile({state,commit}, id){
+    commit('setSelectedFile', id);
   },
 
   /**

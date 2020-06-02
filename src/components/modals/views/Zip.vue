@@ -38,6 +38,7 @@
 import SelectedFileList from '../additions/SelectedFileList.vue';
 import modal from './../mixins/modal';
 import translate from './../../../mixins/translate';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'Zip',
@@ -53,6 +54,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
+    }),
     /**
      * Submit button - active or no
      * @returns {string|boolean}
@@ -80,6 +84,11 @@ export default {
       this.$store.dispatch('fm/zip', `${this.archiveName}.zip`).then(() => {
         // close modal window
         this.hideModal();
+        if(this.currentUser.can['index_disk_cu']){
+              this.$store.dispatch('fm/index'); 
+          }else{
+              this.$store.dispatch('fm/indexCu', this.currentUser.id_cu);
+          }
       });
     },
   },

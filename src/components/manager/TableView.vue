@@ -42,19 +42,20 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-if="!isRootPath">
-                    <td colspan="4" class="fm-content-item" v-on:click="levelUp">
+                <tr v-if="!isRootPath && selectedDirectory!==cuName">
+                    <td colspan="4" class="fm-content-item" v-on:click="levelUp" v-on:mousedown="setMainDir(selectedDirectory)">
                         <i class="fas fa-level-up-alt"></i>
                     </td>
                 </tr>
-                <tr v-for="(directory, index) in directories"
+                <tr v-if="!isMobile()" v-for="(directory, index) in directories"
                     v-bind:key="`d-${index}`"
                     v-bind:class="{'table-info': checkSelect('directories', directory.path)}"
                     v-on:click="selectItem('directories', directory.path, $event)"
                     v-on:contextmenu.prevent="contextMenu(directory, $event)">
                     <td class="fm-content-item unselectable"
                         v-bind:class="(acl && directory.acl === 0) ? 'text-hidden' : ''"
-                        v-on:dblclick="selectDirectory(directory.path)">
+                        v-on:dblclick="selectDirectory(directory.path)"
+                        v-on:mousedown = "setMainDir(directory.path)">
                         <i class="far fa-folder"></i> {{ directory.basename }}
                     </td>
                     <td></td>
@@ -63,10 +64,48 @@
                         {{ timestampToDate(directory.timestamp) }}
                     </td>
                 </tr>
-                <tr v-for="(file, index) in files"
+                
+                <tr v-if="isMobile()" v-for="(directory, index) in directories"
+                    v-bind:key="`d-${index}`"
+                    v-bind:class="{'table-info': checkSelect('directories', directory.path)}"
+                    
+                    v-on:contextmenu.prevent ="contextMenu(directory, $event)">
+                    <td class="fm-content-item unselectable"
+                        v-bind:class="(acl && directory.acl === 0) ? 'text-hidden' : ''"
+                        v-on:click="selectDirectory(directory.path)"
+                        v-on:mousedown = "setMainDir(directory.path)">
+                        <i class="far fa-folder"></i> {{ directory.basename }}
+                    </td>
+                    <td></td>
+                    <td>{{ lang.manager.table.folder }}</td>
+                    <td>
+                        {{ timestampToDate(directory.timestamp) }}
+                    </td>
+                </tr>
+                <tr v-if="!isMobile()" v-for="(file, index) in files"
                     v-bind:key="`f-${index}`"
                     v-bind:class="{'table-info': checkSelect('files', file.path)}"
                     v-on:click="selectItem('files', file.path, $event)"
+                    v-on:dblclick="selectAction(file.path, file.extension)"
+                    v-on:contextmenu.prevent="contextMenu(file, $event)">
+                    <td class="fm-content-item unselectable"
+                        v-bind:class="(acl && file.acl === 0) ? 'text-hidden' : ''">
+                        <i class="far" v-bind:class="extensionToIcon(file.extension)"></i>
+                        {{ file.filename ? file.filename : file.basename }}
+                    </td>
+                    <td>{{ bytesToHuman(file.size) }}</td>
+                    <td>
+                        {{ file.extension }}
+                    </td>
+                    <td>
+                        {{ timestampToDate(file.timestamp) }}
+                    </td>
+                </tr>
+                
+                <tr v-if="isMobile()" v-for="(file, index) in files"
+                    v-bind:key="`f-${index}`"
+                    v-bind:class="{'table-info': checkSelect('files', file.path)}"
+                    @mousedown="selectItem('files', file.path, $event)"
                     v-on:dblclick="selectAction(file.path, file.extension)"
                     v-on:contextmenu.prevent="contextMenu(file, $event)">
                     <td class="fm-content-item unselectable"
@@ -91,6 +130,8 @@
 import translate from './../../mixins/translate';
 import helper from './../../mixins/helper';
 import managerHelper from './mixins/manager';
+import { mapGetters } from 'vuex';
+import generalStore from './../../store/state'
 
 export default {
   name: 'table-view',
@@ -98,7 +139,20 @@ export default {
   props: {
     manager: { type: String, required: true },
   },
+  data() {
+      return {
+          cuName:'',
+          mainDir:'',
+          flag: false,
+      }
+  },
   computed: {
+     ...mapGetters('fm',{
+                selectedDirectory:'selectedDirectory',
+        }),
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
+        }),
     /**
      * Sort settings
      * @returns {*}
@@ -107,7 +161,38 @@ export default {
       return this.$store.state.fm[this.manager].sort;
     },
   },
+  created() {
+      if(this.currentUser.id_cu==0){
+          if(this.currentUser.can['index_disk_cu']){
+              this.cuName='';   
+          }else{
+              this.cuName='BKCU';
+          }
+      }else{
+          this.cuName = this.currentUser.cu.name;
+      }
+  },
   methods: {
+    isMobile() {
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            return true
+        } else {
+            return false
+        }
+    },
+    setMainDir(directory){
+        if(this.currentUser.id_cu==0){
+            if(this.selectedDirectory==null){
+            this.flag=false;
+        }
+
+        if(!this.flag){
+            this.mainDir = directory;
+            this.flag = true;
+        }
+        generalStore.mainDir = this.mainDir;
+        }
+    },
     /**
      * Sort by field
      * @param field

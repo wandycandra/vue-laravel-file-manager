@@ -33,6 +33,7 @@
 <script>
 /* eslint-disable import/no-duplicates, no-param-reassign */
 import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 // Axios
 import HTTP from './http/axios';
 import EventBus from './eventBus';
@@ -49,6 +50,11 @@ import Notification from './components/blocks/Notification.vue';
 import translate from './mixins/translate';
 
 export default {
+  data() {
+    return {
+      id:''
+    }
+  },
   name: 'FileManager',
   mixins: [translate],
   components: {
@@ -74,6 +80,7 @@ export default {
   },
   created() {
     // manual settings
+    this.id = '0';
     this.$store.commit('fm/settings/manualSettings', this.settings);
 
     // initiate Axios
@@ -83,7 +90,12 @@ export default {
 
     // initialize app settings
     this.$store.dispatch('fm/initializeApp');
-
+          if(this.currentUser.can['index_disk_cu']){
+              this.$store.dispatch('fm/index'); 
+          }else{
+              this.$store.dispatch('fm/indexCu', this.currentUser.id_cu);
+          }
+    
     /**
      * todo Keyboard event
      */
@@ -109,6 +121,10 @@ export default {
       activeManager: state => state.settings.activeManager,
       showModal: state => state.modal.showModal,
       fullScreen: state => state.settings.fullScreen,
+    }),
+
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
     }),
   },
   methods: {

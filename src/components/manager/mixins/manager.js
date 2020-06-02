@@ -1,5 +1,6 @@
 // Event bus
 import EventBus from './../../../eventBus';
+import genState from '../../../store/state';
 
 export default {
   computed: {
@@ -64,7 +65,7 @@ export default {
      * @param path
      */
     selectDirectory(path) {
-      this.$store.dispatch(`fm/${this.manager}/selectDirectory`, { path, history: true });
+      this.$store.dispatch(`fm/${this.manager}/selectDirectory`, { path, history: true});
     },
 
     /**
@@ -99,20 +100,39 @@ export default {
     selectItem(type, path, event) {
       // search in selected array
       const alreadySelected = this.selected[type].includes(path);
-
+      let selectedItem = '';
+      if(type=='files'){
+        const dataS = genState.dataS.find(data => data.file_path==='/storage/'+path);
+        selectedItem = {
+            'id': dataS.id,
+            'file_name':dataS.file_name,
+            'file_type': dataS.file_type,
+            'file_path': dataS.file_path
+        }
+      }
       // if pressed Ctrl -> multi select
       if (event.ctrlKey) {
         if (!alreadySelected) {
           // add new selected item
           this.$store.commit(`fm/${this.manager}/setSelected`, { type, path });
+          if(type=='files'){
+            this.$store.dispatch(`fm/${this.manager}/setSelectedFiles`, selectedItem);
+          }
         } else {
           // remove selected item
           this.$store.commit(`fm/${this.manager}/removeSelected`, { type, path });
+          if(type=='files'){
+            this.$store.dispatch(`fm/${this.manager}/removeSelectedFile`, selectedItem);
+          }
         }
       }
-
       // single select
-      if (!event.ctrlKey && !alreadySelected) this.$store.commit(`fm/${this.manager}/changeSelected`, { type, path });
+      if (!event.ctrlKey && !alreadySelected){
+        this.$store.commit(`fm/${this.manager}/changeSelected`, { type, path });
+        if(type=='files'){
+          this.$store.dispatch(`fm/${this.manager}/setSelectedFile`, selectedItem);
+        }
+      }
     },
 
     /**
@@ -138,6 +158,7 @@ export default {
       // create event
       EventBus.$emit('contextMenu', event);
     },
+
 
     /**
      * Select and Action

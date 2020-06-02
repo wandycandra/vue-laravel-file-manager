@@ -8,10 +8,10 @@ export default {
    * @param name
    * @returns {AxiosPromise<any>}
    */
-  createFile(disk, path, name) {
-    return HTTP.post('create-file', { disk, path, name });
+  createFile(disk, path, name, mainDir) {
+    // console.log(mainDir);
+    return HTTP.post('create-file', { disk, path, name, mainDir});
   },
-
   /**
    * Update file
    * @param formData

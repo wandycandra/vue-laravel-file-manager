@@ -1,3 +1,4 @@
+
 <template>
     <div class="fm-navbar mb-3">
         <div class="row justify-content-between">
@@ -70,14 +71,15 @@
                             v-on:click="paste">
                         <i class="fas fa-paste"></i>
                     </button>
-                </div>
-                <div class="btn-group" role="group">
+                      <div class="btn-group" role="group">
                     <button type="button" class="btn btn-secondary"
                             v-bind:title="lang.btn.hidden"
                             v-on:click="toggleHidden">
                         <i class="fas" v-bind:class="[hiddenFiles ? 'fa-eye': 'fa-eye-slash']"></i>
                     </button>
                 </div>
+                </div>
+              
             </div>
             <div class="col-auto text-right">
                 <div class="btn-group" role="group">
@@ -117,10 +119,17 @@
 <script>
 import translate from './../../mixins/translate';
 import EventBus from './../../eventBus';
+import { mapGetters } from 'vuex';
+
+
 
 export default {
   mixins: [translate],
   computed: {
+    ...mapGetters('auth',{
+				currentUser: 'currentUser'
+    }),
+   
     /**
      * Active manager name
      * @returns {default.computed.activeManager|(function())|string|activeManager}
@@ -242,7 +251,15 @@ export default {
      * Paste
      */
     paste() {
-      this.$store.dispatch('fm/paste');
+      let idCu = this.currentUser.id_cu;
+      let canIndexDisk = false;
+      if(this.currentUser.can['index_disk_cu']){
+              canIndexDisk = true; 
+      }
+      this.$store.dispatch('fm/paste',{
+        idCu,
+        canIndexDisk
+      });
     },
 
     /**
